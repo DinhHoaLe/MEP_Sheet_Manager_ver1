@@ -1,0 +1,94 @@
+CẤU TRÚC VÀ LUỒNG HOẠT ĐỘNG
+
+Add-in Manager
+  -> Commands/GetAllSheetNamesCommand
+  -> UI/Wpf/SheetManagerWindow (modeless)
+  -> Infrastructure/SheetExternalEventHandler
+  -> Services/Revit/SheetService
+
+Đọc/ghi Excel: UI -> Services/Excel/SheetWorkbook -> Models/SheetInfo.
+Không gọi Revit API trực tiếp từ sự kiện nút WPF hoặc background thread.
+Constructor chỉ tạo UI và ExternalEvent trong IExternalCommand. Loaded + Dispatcher ContextIdle hiện màn hình tải,
+sau đó QueueRequest đọc title block/sheet/floor plan/revision qua ExternalEvent. Chỉ chuyển màn hình chính khi thành công.
+Lỗi tải giữ màn hình mở đầu với nút thử lại. Đóng tool hủy yêu cầu đang chờ.
+
+NƠI SỬA CODE
+- Bố cục/màu/nút: src/UI/Wpf/SheetManagerWindow.xaml.
+- Hành vi nút/preview/chọn file: src/UI/Wpf/SheetManagerWindow.xaml.cs.
+- Quy tắc kiểm tra, bỏ qua sheet trùng, transaction: src/Services/Revit/SheetService.cs.
+- Cột Excel và định dạng workbook: src/Services/Excel/SheetWorkbook.cs.
+- JSON sheet version 1: src/Services/Excel/SheetJsonFile.cs (System.Runtime.Serialization, không cần DLL ngoài).
+- Ảnh mở đầu: src/UI/Assets/sheet-splash.png, nhúng Resource trong DLL.
+- Trường dữ liệu: src/Models/SheetInfo.cs.
+- Class gọi trong Add-in Manager: src/Commands/GetAllSheetNamesCommand.cs.
+- Đăng ký file mới: thêm Compile/Page tương ứng trong MEP_Sheet_Manager.csproj.
+
+Namespace hiện giữ MEP_Sheet_Manager để class Add-in Manager không thay đổi.
+Di chuyển file không đổi tên assembly, class, cấu trúc Excel hoặc vị trí DLL chính.
+XAML và code-behind ở cùng thư mục, liên kết bằng DependentUpon trong csproj.
+
+TEST
+Chạy .\test.ps1 để build chính, build hai project test và chạy WorkbookTests.
+Revit test: nạp tests/bin/RevitSheetExcelTests.dll > RevitSheetTests > Run.
+Bộ test Revit tạo project tạm rồi đóng không lưu; log trong tests/artifacts.
+Không nhầm DLL test với DLL tool dành cho sử dụng hằng ngày.
+
+SHEET LIST 04/10/2026
+- Toolbar Xuất dữ liệu có menu Excel/JSON. Nhập/Tạo sheet có Nạp Excel/JSON và Tạo sheet thủ công.
+- SheetInfo.CanEdit true cho bản nháp; sheet hiện hữu chỉ đọc. Placeholder là cột đầu, checkbox cập nhật bản nháp.
+- ShowDraft/ValidateDraft dùng SheetService chung cho Excel, JSON và nhập tay.
+- Khi sửa số/tên hoặc tick, commit edit rồi đưa yêu cầu kiểm tra qua ExternalEvent. Khóa BodyGrid khi request đang chờ.
+- Export dùng imported nếu đang xem bản nháp, ngược lại projectSheets snapshot; không làm mất chỉnh sửa khi export.
+- tests/Workbook/JsonTests.cs kiểm tra roundtrip, format và JSON -> Excel.
+- tests/RenderSheetManager.ps1 render XAML với dữ liệu minh họa và kiểm tra ảnh nhúng/menu/binding checkbox; không mở cửa sổ desktop.
+
+FLOOR PLAN
+src/Models/SheetViewAssignment.cs: mỗi sheet, danh sách plan và lựa chọn của người dùng.
+src/Services/Revit/FloorPlanPlacementService.cs: đọc sheet/plan, kiểm tra và tạo viewport.
+UI View List bind ComboBox theo từng sheet; thao tác Place đi qua ExternalEvent.
+Kiểm tra view trùng và CanAddViewToSheet trước transaction; lỗi tạo rollback toàn bộ.
+ScopeBoxAlignmentService đọc VIEWER_VOLUME_OF_INTEREST_CROP, lấy tâm geometry bounds và chuyển model -> projection -> sheet.
+Di chuyển viewport để tâm scope trùng tâm vùng giấy chừa trái 44 mm, phải 94 mm. Reject missing scope/split crop; không tự tạo/duplicate view.
+Preview bố cục không mở cửa sổ và không điều khiển máy:
+powershell.exe -NoProfile -STA -File tests/RenderViewList.ps1
+Ảnh tests/artifacts/ViewListPreview.png dùng dữ liệu minh họa, không phải screenshot Revit.
+
+
+PREVIEW VÀ FILE TỌA ĐỘ
+- Models/SheetLayoutInfo.cs: dữ liệu bố trí mm và snapshot kích thước viewport.
+- Services/Revit/SheetLayoutPreviewService.cs: đo viewport thật, rollback viewport tạm, export ảnh plan.
+- Services/Excel/SheetLayoutFile.cs: lưu/nạp XML mm an toàn, khớp UniqueId hoặc Sheet Number/View Name.
+- UI/Wpf/SheetLayoutPreviewWindow.xaml(.cs): canvas kéo vị trí, nhập mm và save.
+- FloorPlanPlacementService: mặc định canh tâm scope; scopeCentered tính lại từ scope sống + offset mm. File legacy dùng tọa độ tuyệt đối.
+- Preview đo ScopeBaseX/Y là tâm viewport cần thiết để scope nằm đúng giữa giấy; chỉnh vị trí lưu delta từ base này.
+- SheetLayoutFile: version 1 thêm thuộc tính tùy chọn scopeCentered/offsetX/offsetY; file cũ thiếu thuộc tính vẫn đọc được.
+- tests/Workbook/LayoutTests.cs: kiểm thử file và matching, không cần Revit.
+- tests/RenderLayoutPreview.ps1: kiểm thử WPF và render không mở cửa sổ desktop; dùng Windows PowerShell 64-bit STA.
+Cửa sổ preview chỉ xử lý snapshot, không gọi Revit API từ mouse handler.
+Tool chính bị khóa khi preview mở để tránh sửa lựa chọn đang preview; Revit vẫn thao tác được.
+Tọa độ modeless chỉ ghi vào model khi yêu cầu Apply được Revit xử lý qua ExternalEvent.
+
+
+TITLE BLOCK REVIEW / AUTO ALIGNMENT
+TitleBlockPreviewService: đọc curves/polyline trong geometry instance, tích lũy transform và lưu line mm vào snapshot.
+Preview window vẽ line của title block, vùng lề và dấu tâm; không gọi API từ UI.
+SheetLayoutPreview.ScopeBaseX/Y được dùng cho tâm canh tự động: scope nếu có, viewport box nếu không có scope.
+Review chỉ khung tên (TitleBlockOnly) không cho save/use vị trí vì chưa chọn Floor Plan.
+View List không bind ScopeName/Status; PositionLabel nằm trên bảng và bind ViewGrid.SelectedItem.
+RevitScopeAlignmentTests thử cả hai nhánh nếu project có view tương ứng; thay đổi rotation/offset và rollback toàn bộ.
+
+PROGRESS / FILTER / DELETE
+QueueSteps dùng IEnumerator<Action>, mỗi lượt xử lý một action trong ExternalEvent rồi trả quyền cho vòng UI.
+Không dùng DoEvents, không chạy Revit API trên background thread, không để transaction mở giữa các lượt.
+LoadProjectSteps đọc từng sheet và đổi ProcessingStatus; ImportDraftSteps kiểm tra từng dòng dữ liệu nhập.
+SheetInfo INPC riêng cho ProcessingStatus; Status vẫn phục vụ validation. Done nghĩa đã nạp/kiểm tra, không nghĩa đã tạo sheet.
+SheetBrowserService snapshot GetCurrentBrowserOrganizationForSheets + AreFiltersSatisfied + GetFolderItems qua API.
+SheetListFilter thuần dữ liệu kết hợp search với browser visibility/full path; UI dùng ListCollectionView để giữ lựa chọn khi lọc.
+SheetService.Delete kiểm tra lựa chọn bằng ID/UniqueId trước transaction và rollback nếu lỗi.
+
+STEP 2 PROGRESS REPLACES PREVIOUS LOADING SCAN
+Removed LoadProjectSteps/ImportDraftSteps and SheetInfo.ProcessingStatus; single request reads initial/import data.
+FloorPlanPlacementService.Validate provides batch preflight; Place remains atomic for its supplied rows.
+UI PlacePlansSteps calls Place for one sheet per request, sets Done only after commit; failed rows get Error.
+Iterator disposal cancels remaining Waiting/Running entries without reverting earlier committed sheets.
+SheetViewAssignment processing state starts blank and resets on view/coordinate change.

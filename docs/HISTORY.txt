@@ -1,0 +1,78 @@
+MEP SHEET STUDIO — REVIT 2023
+
+CHỨC NĂNG
+- Giao diện WPF theo màu sắc, card, nút và bảng của FamilyWizardWindow.xaml tham khảo.
+- Lấy tất cả ViewSheet trong project đang active, bao gồm placeholder; giữ tên trùng.
+- Xuất Excel .xlsx: SheetNumber, SheetName, IsPlaceholder. Không cần cài Excel.
+- Nạp Excel, xem trước trạng thái rồi tạo sheet trong project đích đang mở.
+
+CHẠY BẰNG ADD-IN MANAGER
+1. Mở project trong Revit 2023.
+2. Add-Ins > Add-in Manager > Manual Mode > Load.
+3. Nạp bin\Release\Revit2023\MEP_Sheet_Manager_Modeless.dll.
+4. Chọn MEP_Sheet_Manager.GetAllSheetNamesCommand bên dưới DLL này > Run.
+Không cần file .addin. DLL cũ MEP_Sheet_Manager.dll chỉ là bản trước, không dùng cho chức năng Excel.
+Nếu đang chạy bản cũ trong bộ nhớ sau khi cập nhật DLL, đóng tool và khởi động lại Revit để nạp bản mới.
+
+XUẤT VÀ IMPORT SANG PROJECT MỚI
+1. Trong project nguồn: chạy tool > Xuất Excel (.xlsx) > lưu file.
+2. Đóng tool. Tạo hoặc mở project đích mới trong Revit; load family title block nếu cần.
+3. Chạy lại tool trong project đích > Nạp Excel (.xlsx).
+4. Kiểm tra SheetNumber, SheetName, Dòng Excel và Kiểm tra; kéo thanh ngang hoặc phóng to cửa sổ để xem thêm cột.
+5. Chọn title block đã có trong project đích, hoặc Không có title block để tạo sheet trống.
+6. Chọn Tạo sheet trong project > xác nhận project đích. Có thể Undo trong Revit sau khi tạo xong.
+Tool dùng project đang active; không tự mở hoặc lưu file RVT.
+Chỉ tạo sheet và gán số/tên; không chuyển views, schedules, title block family hoặc các tham số khác từ project nguồn.
+Placeholder được tạo theo IsPlaceholder, không có title block.
+
+ĐỊNH DẠNG EXCEL
+Worksheet ưu tiên tên Sheets; nếu không có thì đọc worksheet đầu tiên.
+Dòng đầu phải có SheetNumber và SheetName (không phân biệt hoa/thường).
+IsPlaceholder tùy chọn: TRUE/FALSE hoặc 1/0; bỏ cột này hoặc để trống thì là sheet thường.
+Giữ SheetNumber dạng Text khi sửa Excel để không mất số 0 đầu.
+Không dùng công thức trong các ô dữ liệu import; thay bằng giá trị tĩnh.
+Số sheet đã có trong project được bỏ qua, không đổi tên sheet đang có.
+Tên sheet có thể trùng, số sheet trong Excel không được trùng.
+Thiếu tên/số hoặc ký tự không hợp lệ sẽ báo lỗi và khóa nút tạo; sửa Excel rồi nạp lại.
+Nếu lỗi xảy ra trong quá trình tạo, toàn bộ transaction import được rollback.
+
+BUILD VÀ KIỂM THỬ
+Build: .\build.ps1 (Revit 2023, .NET Framework 4.8, x64).
+Build Revit 2024: .\build.ps1 -RevitVersion 2024; chưa chạy thực tế trên Revit 2024.
+Revit 2025/2026 cần target .NET 8 riêng, không sử dụng DLL 2023.
+
+Kết quả ngày 02/10/2026:
+- Build Release thành công.
+- Add-in Manager 1.6.4: giao diện chạy, đọc 240 sheet, xuất Sheets_5CT1.xlsx.
+- Nạp lại Excel vào cùng project: 240 dòng được bỏ qua, 0 lỗi, nút tạo khóa đúng.
+- 8 kiểm thử Excel: giữ số 0 đầu, tiếng Việt/ký tự XML/tên trùng, placeholder, ghi đè, workbook rỗng, shared strings, chặn công thức.
+- 8 kiểm thử Revit qua Add-in Manager trên project mới tạm: tạo 3 sheet từ Excel, kiểm tra tên/số/placeholder, import lặp, chặn trùng/thiếu dữ liệu, rollback khi title block không hợp lệ.
+- Project thử nghiệm đóng không lưu. Không tạo sheet trong project đang làm việc của người dùng.
+- Tạo sheet không có title block đã test; tạo với title block family thực tế chưa test.
+Log Revit: tests\artifacts\RevitTestResults.txt.
+Source tests: tests\WorkbookTests.cs và tests\RevitSheetTests.cs.
+
+
+BẢN MODELESS + EXTERNAL EVENT (02/10/2026)
+DLL mới: bin\Release\Revit2023\MEP_Sheet_Manager_Modeless.dll.
+Đóng cửa sổ bản cũ trước khi chạy bản mới; chọn command bên dưới đúng DLL Modeless.
+Cửa sổ dùng Show(), cho phép thao tác Revit khi tool đang mở.
+Export, kiểm tra import, cập nhật danh sách và tạo sheet đều gửi yêu cầu qua ExternalEvent.
+Revit chờ kết thúc lệnh/chế độ chỉnh sửa hiện tại rồi mới xử lý; không tạo sheet từ background thread.
+Tool gắn với project lúc mở. Nếu đổi/đóng project, yêu cầu sẽ báo lỗi thay vì thao tác nhầm project.
+Muốn dùng project khác: đóng tool, active project đích rồi chạy lại command.
+Không gửi nhiều yêu cầu cùng lúc; đóng tool khi yêu cầu đang chờ sẽ hủy thao tác của yêu cầu đó.
+Bấm Danh sách hiện tại để cập nhật khi thêm/xóa sheet hoặc load title block bên ngoài tool.
+Hộp chọn file/xác nhận vẫn cần tương tác; lúc transaction chạy Revit có thể bận trong thời gian ngắn.
+Đã build DLL và 8 kiểm thử Excel đạt. Bộ kiểm thử Revit đã build lại.
+Chưa chạy trực tiếp bản modeless trong Revit để tránh chiếm chuột/bàn phím; kết quả test Revit phía trên thuộc bản trước.
+
+ĐẶT FLOOR PLAN LÊN SHEET
+Có thể kéo floor plan từ Project Browser vào sheet bằng Revit.
+Với API: kiểm tra Viewport.CanAddViewToSheet(doc, sheet.Id, plan.Id),
+sau đó trong Transaction gọi Viewport.Create(doc, sheet.Id, plan.Id, vị trí XYZ trên sheet).
+Floor plan phải tồn tại trong project đích, không phải view template; sheet phải là sheet thật, không phải placeholder.
+Nếu plan đã có trên sheet khác, cần chọn view khác hoặc duplicate/dependent view phù hợp trước khi đặt.
+Tool hiện tại chỉ import danh sách sheet; chưa có chức năng gán floor plan tự động.
+Để bổ sung import bố trí view: dùng các cột SheetNumber, ViewName, X_mm, Y_mm và quy tắc xử lý view đã đặt.
+Tọa độ viewport là tọa độ sheet, không phải tọa độ model, và cần chuyển mm sang đơn vị nội bộ Revit.

@@ -1,0 +1,209 @@
+<Window x:Class="MEP_Sheet_Manager.SheetManagerWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+ Title="MEP Sheet Studio" Width="1180" Height="790" MinWidth="940" MinHeight="720"
+ WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="CanResize"
+ Background="#F5F2EE" FontFamily="Segoe UI" FontSize="13" Foreground="#37322B">
+ <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="42" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
+ <Window.Resources>
+<SolidColorBrush x:Key="Accent" Color="#90805C" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<SolidColorBrush x:Key="AccentDark" Color="#6F6044" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<SolidColorBrush x:Key="ButtonBrush" Color="#62543C" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<SolidColorBrush x:Key="Ink" Color="#37322B" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<SolidColorBrush x:Key="Muted" Color="#716B63" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<SolidColorBrush x:Key="Line" Color="#DDD6CE" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<SolidColorBrush x:Key="Surface" Color="#F5F2EE" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<SolidColorBrush x:Key="ProgressInactive" Color="#E8E2DA" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" />
+<Style x:Key="Card" TargetType="Border" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="White" /><Setter Property="BorderBrush" Value="{StaticResource Line}" /><Setter Property="BorderThickness" Value="1" /><Setter Property="CornerRadius" Value="16" /><Setter Property="Padding" Value="24" /><Setter Property="Margin" Value="0,0,0,16" /></Style>
+<Style x:Key="Field" TargetType="TextBlock" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Foreground" Value="{StaticResource Muted}" /><Setter Property="FontSize" Value="11" /><Setter Property="FontWeight" Value="SemiBold" /><Setter Property="Margin" Value="0,0,0,7" /></Style>
+<Style x:Key="Input" TargetType="Control" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="MinHeight" Value="36" /><Setter Property="Margin" Value="0,0,0,12" /><Setter Property="BorderBrush" Value="{StaticResource Line}" /><Setter Property="BorderThickness" Value="1" /><Setter Property="Padding" Value="9,6" /></Style>
+<Style x:Key="PrimaryButton" TargetType="Button" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="{StaticResource ButtonBrush}" /><Setter Property="Foreground" Value="White" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Padding" Value="20,10" /><Setter Property="FontWeight" Value="SemiBold" /><Setter Property="MinWidth" Value="112" /><Setter Property="Cursor" Value="Hand" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Border x:Name="surface" Background="{TemplateBinding Background}" CornerRadius="9" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="surface" Property="Background" Value="#514631" /></Trigger><Trigger Property="IsEnabled" Value="False"><Setter TargetName="surface" Property="Background" Value="#C2C6C5" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="White" /><Setter Property="Foreground" Value="{StaticResource Ink}" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Border x:Name="surface" Background="{TemplateBinding Background}" CornerRadius="9" Padding="{TemplateBinding Padding}" BorderBrush="{StaticResource Line}" BorderThickness="1"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="surface" Property="Background" Value="#EEE8E1" /></Trigger><Trigger Property="IsEnabled" Value="False"><Setter TargetName="surface" Property="Opacity" Value="0.5" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style x:Key="ChromeButton" TargetType="Button" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Width" Value="46" /><Setter Property="Height" Value="42" /><Setter Property="Foreground" Value="{StaticResource Ink}" /><Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Cursor" Value="Hand" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Border x:Name="chromeSurface" Background="{TemplateBinding Background}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="chromeSurface" Property="Background" Value="#B3A491" /></Trigger><Trigger Property="IsPressed" Value="True"><Setter TargetName="chromeSurface" Property="Background" Value="#90805C" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style x:Key="GridStyle" TargetType="DataGrid" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="White" /><Setter Property="BorderThickness" Value="0" /><Setter Property="GridLinesVisibility" Value="None" /><Setter Property="HorizontalGridLinesBrush" Value="{StaticResource Line}" /><Setter Property="RowHeight" Value="66" /><Setter Property="ColumnHeaderHeight" Value="46" /><Setter Property="HeadersVisibility" Value="Column" /><Setter Property="AutoGenerateColumns" Value="False" /><Setter Property="CanUserAddRows" Value="False" /><Setter Property="CanUserDeleteRows" Value="False" /><Setter Property="IsReadOnly" Value="True" /><Setter Property="SelectionUnit" Value="FullRow" /><Setter Property="AlternatingRowBackground" Value="White" /><Setter Property="RowBackground" Value="White" /></Style>
+<Style TargetType="DataGridRow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="White" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="DataGridRow"><Border x:Name="rowSurface" Background="{TemplateBinding Background}" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" CornerRadius="10" Margin="2,3" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><DataGridCellsPresenter /></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="rowSurface" Property="Background" Value="#F2EEE9" /></Trigger><Trigger Property="IsSelected" Value="True"><Setter TargetName="rowSurface" Property="Background" Value="#E8E2DA" /><Setter TargetName="rowSurface" Property="BorderBrush" Value="#C8BCAC" /><Setter TargetName="rowSurface" Property="BorderThickness" Value="1" /></Trigger><DataTrigger Binding="{Binding IsChecked}" Value="True"><Setter TargetName="rowSurface" Property="Background" Value="#E8E2DA" /><Setter TargetName="rowSurface" Property="BorderBrush" Value="#C8BCAC" /><Setter TargetName="rowSurface" Property="BorderThickness" Value="1" /></DataTrigger><DataTrigger Binding="{Binding AlreadyExists}" Value="True"><Setter TargetName="rowSurface" Property="Background" Value="#E2E5E4" /><Setter TargetName="rowSurface" Property="BorderBrush" Value="#C2C6C5" /><Setter TargetName="rowSurface" Property="BorderThickness" Value="1" /></DataTrigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style TargetType="DataGridColumnHeader" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="{StaticResource Surface}" /><Setter Property="Foreground" Value="{StaticResource Muted}" /><Setter Property="FontWeight" Value="SemiBold" /><Setter Property="Padding" Value="18,0" /><Setter Property="BorderThickness" Value="0" /><Setter Property="HorizontalContentAlignment" Value="Left" /></Style>
+<Style TargetType="DataGridCell" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="BorderThickness" Value="0" /><Setter Property="Padding" Value="18,0" /><Setter Property="VerticalContentAlignment" Value="Center" /><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Foreground" Value="{StaticResource Ink}" /><Style.Triggers><Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="Transparent" /></Trigger></Style.Triggers></Style>
+<Style x:Key="CenteredGridText" TargetType="TextBlock" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="TextAlignment" Value="Left" /><Setter Property="VerticalAlignment" Value="Center" /><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="TextTrimming" Value="CharacterEllipsis" /></Style>
+ <Style TargetType="TabItem">
+  <Setter Property="Padding" Value="18,10"/><Setter Property="Foreground" Value="{StaticResource Muted}"/><Setter Property="Background" Value="#E8E2DA"/>
+  <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabItem">
+   <Border x:Name="TabSurface" Background="{TemplateBinding Background}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="8,8,0,0" Padding="{TemplateBinding Padding}" Margin="0,0,4,0"><ContentPresenter ContentSource="Header"/></Border>
+   <ControlTemplate.Triggers><Trigger Property="IsSelected" Value="True"><Setter TargetName="TabSurface" Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="FontWeight" Value="SemiBold"/></Trigger><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="TabSurface" Property="BorderBrush" Value="{StaticResource Accent}"/></Trigger></ControlTemplate.Triggers>
+  </ControlTemplate></Setter.Value></Setter>
+ </Style>
+ </Window.Resources>
+ <Grid>
+  <Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid Background="#E8E2DA">
+   <TextBlock Text="MEP SHEET STUDIO" Margin="24,0" VerticalAlignment="Center" FontWeight="SemiBold"/>
+   <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+    <Button Content="―" Style="{StaticResource ChromeButton}" Click="Minimize_Click" ToolTip="Thu nhỏ"/>
+    <Button Content="□" Style="{StaticResource ChromeButton}" Click="Maximize_Click" ToolTip="Phóng to / khôi phục"/>
+    <Button Content="×" Style="{StaticResource ChromeButton}" Click="Close_Click" ToolTip="Đóng"/>
+   </StackPanel>
+  </Grid>
+  <StackPanel x:Name="HeaderPanel" Grid.Row="1" Margin="32,12,32,10" Visibility="Collapsed">
+   <TextBlock Text="Quản lý sheet" FontSize="28" FontWeight="SemiBold"/>
+   <TextBlock x:Name="ProjectLabel" Foreground="{StaticResource Muted}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+  </StackPanel>
+  <Grid x:Name="BodyGrid" Grid.Row="2" Margin="32,0,32,0" Visibility="Collapsed">
+   <Grid.ColumnDefinitions><ColumnDefinition x:Name="ActionsColumn" Width="0"/><ColumnDefinition x:Name="SpacerColumn" Width="0"/><ColumnDefinition/></Grid.ColumnDefinitions>
+   <TabControl x:Name="MainTabs" Grid.Column="2" SelectionChanged="Tabs_SelectionChanged" Background="Transparent" BorderThickness="0" Margin="0,0,0,16">
+    <TabItem Header="Sheet List"><Border Style="{StaticResource Card}" Padding="20" Margin="0">
+    <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+     <DockPanel LastChildFill="True">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+       <Button x:Name="ExportButton" Content="Xuất dữ liệu ▾" Style="{StaticResource SecondaryButton}" Click="ExportMenu_Click" Margin="0,0,8,0">
+        <Button.ContextMenu><ContextMenu><MenuItem Header="Xuất Excel (.xlsx)" Click="Export_Click" Tag="xlsx"/><MenuItem Header="Xuất JSON (.json)" Click="Export_Click" Tag="json"/></ContextMenu></Button.ContextMenu>
+       </Button>
+       <Button x:Name="NewSheetButton" Content="Nhập / Tạo sheet ▾" Style="{StaticResource PrimaryButton}" Click="NewSheetMenu_Click" Margin="0,0,8,0">
+        <Button.ContextMenu><ContextMenu><MenuItem Header="Nạp Excel / JSON" Click="Import_Click"/><MenuItem Header="Tạo sheet thủ công" Click="Manual_Click"/></ContextMenu></Button.ContextMenu>
+       </Button>
+       <Button Content="Cập nhật" Style="{StaticResource SecondaryButton}" Click="Refresh_Click"/>
+      </StackPanel>
+      <TextBlock x:Name="ListHeading" Text="SHEET TRONG PROJECT" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,12,0"/>
+     </DockPanel>
+     <StackPanel Grid.Row="1" Margin="0,8,0,14">
+      <TextBlock x:Name="CountLabel" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+      <WrapPanel>
+       <TextBlock Text="Search" VerticalAlignment="Center" Margin="0,0,8,0"/><TextBox x:Name="SheetSearch" Width="220" Style="{StaticResource Input}" Margin="0,0,8,0" ToolTip="Tìm theo Sheet Number hoặc Sheet Name" TextChanged="Search_Changed"/>
+       <Button Content="Filter Project Browser ▾" Style="{StaticResource SecondaryButton}" Click="BrowserFilter_Click" Margin="0,0,8,0"/>
+       <ComboBox x:Name="SheetBrowserGroup" DisplayMemberPath="Label" Width="240" Style="{StaticResource Input}" Margin="0,0,8,0" Visibility="Collapsed" SelectionChanged="BrowserGroup_Changed"/>
+       <Button Content="Xóa sheet" Style="{StaticResource SecondaryButton}" Click="DeleteSheets_Click"/>
+      </WrapPanel>
+     </StackPanel>
+     <Border x:Name="SheetActions" Grid.Row="2" Background="#F5F2EE" CornerRadius="10" Padding="12" Margin="0,0,0,12" Visibility="Collapsed">
+      <StackPanel>
+       <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <StackPanel><TextBlock Text="TITLE BLOCK CHO SHEET MỚI" Style="{StaticResource Field}"/>
+         <ComboBox x:Name="TitleBlocks" DisplayMemberPath="Label" Style="{StaticResource Input}" Margin="0,0,16,0"/>
+        </StackPanel>
+        <Button Grid.Column="1" x:Name="CreateButton" Content="Tạo sheet trong project" Style="{StaticResource PrimaryButton}" Click="Create_Click" IsEnabled="False" VerticalAlignment="Bottom"/>
+       </Grid>
+       <StackPanel x:Name="ManualPanel" Visibility="Collapsed" Margin="0,8,0,0">
+        <TextBlock Text="TẠO SHEET THỦ CÔNG" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+         <TextBox x:Name="ManualNumber" Style="{StaticResource Input}" Margin="0,0,10,0" ToolTip="Sheet Number"/>
+         <TextBox x:Name="ManualName" Grid.Column="1" Style="{StaticResource Input}" Margin="0,0,10,0" ToolTip="Sheet Name"/>
+         <CheckBox x:Name="ManualPlaceholder" Grid.Column="2" Content="Placeholder" VerticalAlignment="Center" Margin="0,0,14,0"/>
+         <Button Grid.Column="3" Content="Thêm vào danh sách" Style="{StaticResource SecondaryButton}" Click="AddManual_Click"/>
+        </Grid>
+       </StackPanel>
+       <TextBlock Text="Sửa số/tên và tick Placeholder trong bảng. Xuất để lưu bản nháp; bấm Tạo sheet để ghi vào project." Foreground="{StaticResource Muted}" Margin="0,10,0,0" TextWrapping="Wrap"/>
+      </StackPanel>
+     </Border>
+     <DataGrid x:Name="SheetGrid" Grid.Row="3" Style="{StaticResource GridStyle}" RowHeight="48" ClipboardCopyMode="IncludeHeader" SelectionMode="Extended" CellEditEnding="SheetEditEnding">
+      <DataGrid.Columns>
+       <DataGridTemplateColumn Header="Placeholder" Width="130" MinWidth="130" IsReadOnly="True"><DataGridTemplateColumn.CellTemplate><DataTemplate>
+        <CheckBox IsChecked="{Binding IsPlaceholder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CanEdit}" Click="Placeholder_Click" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="Tick khi nhập/tạo sheet mới. Sheet đang tồn tại chỉ hiển thị trạng thái."/>
+       </DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+       <DataGridTextColumn Header="Sheet Number" Binding="{Binding Number, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" MinWidth="180" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Sheet Name" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="230" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn x:Name="RowColumn" Header="Dòng dữ liệu" Binding="{Binding ExcelRow}" Width="110" MinWidth="110" Visibility="Collapsed" IsReadOnly="True"/>
+       <DataGridTextColumn x:Name="StatusColumn" Header="Kiểm tra" Binding="{Binding Status}" Width="270" MinWidth="210" Visibility="Collapsed" IsReadOnly="True" ElementStyle="{StaticResource CenteredGridText}"/>
+      </DataGrid.Columns>
+     </DataGrid>
+    </Grid>
+   </Border></TabItem>
+   <TabItem Header="View List">
+    <Border Style="{StaticResource Card}" Margin="0" Padding="20"><Grid>
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <DockPanel><StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+      <Button Content="Cập nhật" Style="{StaticResource SecondaryButton}" Click="Refresh_Click" Margin="0,0,8,0"/>
+      <Button x:Name="ReviewTitleBlocksButton" Content="Review Title Blocks" Style="{StaticResource SecondaryButton}" Click="ReviewTitleBlocks_Click"/>
+     </StackPanel><TextBlock Text="CHỌN FLOOR PLAN CHO TỪNG SHEET" FontWeight="Bold" VerticalAlignment="Center"/></DockPanel>
+     <Grid Grid.Row="1" Margin="0,10,0,14"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
+      <StackPanel Margin="0,0,18,0">
+       <TextBlock x:Name="ViewCountLabel" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+       <WrapPanel>
+        <TextBlock Text="Search" VerticalAlignment="Center" Margin="0,0,8,6"/><TextBox x:Name="ViewSearch" Width="200" Style="{StaticResource Input}" Margin="0,0,8,6" ToolTip="Tìm theo Sheet Number hoặc Sheet Name" TextChanged="Search_Changed"/>
+        <Button Content="Filter Project Browser ▾" Style="{StaticResource SecondaryButton}" Click="BrowserFilter_Click" Margin="0,0,8,6"/>
+        <ComboBox x:Name="ViewBrowserGroup" DisplayMemberPath="Label" Width="220" Style="{StaticResource Input}" Margin="0,0,8,6" Visibility="Collapsed" SelectionChanged="BrowserGroup_Changed"/>
+        <Button Content="Xóa sheet" Style="{StaticResource SecondaryButton}" Click="DeleteSheets_Click" Margin="0,0,0,6"/>
+       </WrapPanel>
+      </StackPanel>
+      <Border Grid.Column="1" Background="#F5F2EE" CornerRadius="8" Padding="12"><StackPanel>
+       <TextBlock Text="VỊ TRÍ (mm) · SHEET ĐANG CHỌN" Style="{StaticResource Field}"/>
+       <TextBlock Text="{Binding SelectedItem.Number, ElementName=ViewGrid}" FontWeight="SemiBold"/>
+       <TextBlock Text="{Binding SelectedItem.PositionLabel, ElementName=ViewGrid}" TextWrapping="Wrap" Foreground="{StaticResource Muted}" Margin="0,4,0,0"/>
+      </StackPanel></Border>
+     </Grid>
+     <DataGrid x:Name="ViewGrid" Grid.Row="2" Style="{StaticResource GridStyle}" RowHeight="48" ClipboardCopyMode="IncludeHeader" SelectionMode="Extended">
+      <DataGrid.Columns>
+       <DataGridTextColumn Header="Sheet Number" Binding="{Binding Number}" Width="160" MinWidth="140" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Sheet Name" Binding="{Binding Name}" Width="*" MinWidth="180" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTemplateColumn Header="Floor Plan để đặt" Width="1.3*" MinWidth="220">
+        <DataGridTemplateColumn.CellTemplate><DataTemplate>
+         <ComboBox ItemsSource="{Binding FloorPlans}" SelectedItem="{Binding SelectedFloorPlan, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" Margin="4,6" VerticalContentAlignment="Center" ToolTip="Chọn plan chưa đặt hoặc plan hiện có trên sheet này"/>
+        </DataTemplate></DataGridTemplateColumn.CellTemplate>
+       </DataGridTemplateColumn>
+       <DataGridTextColumn Header="Floor Plan hiện có" Binding="{Binding CurrentFloorPlans}" Width="160" MinWidth="140" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Trạng thái" Binding="{Binding ProcessingStatus}" Width="115" ElementStyle="{StaticResource CenteredGridText}"/>
+      </DataGrid.Columns>
+     </DataGrid>
+     <DockPanel Grid.Row="3" Margin="0,16,0,0"><StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+      <Button x:Name="LoadLayoutButton" Content="Nạp bố trí" Style="{StaticResource SecondaryButton}" Click="LoadLayout_Click" Margin="0,0,8,0"/>
+      <Button x:Name="SaveLayoutButton" Content="Lưu bố trí" Style="{StaticResource SecondaryButton}" Click="SaveLayout_Click" Margin="0,0,8,0" IsEnabled="False"/>
+      <Button x:Name="PlacePlansButton" Content="Áp dụng Floor Plan" DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Click="PlacePlans_Click" IsEnabled="False"/></StackPanel>
+      <TextBlock Text="Review khung tên để canh giữa và lưu X/Y (mm). Áp dụng để đặt hoặc di chuyển Floor Plan." Foreground="{StaticResource Muted}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,16,0"/>
+     </DockPanel>
+    </Grid></Border>
+   </TabItem>
+   <TabItem Header="Revision List">
+    <Border Style="{StaticResource Card}" Margin="0" Padding="20"><Grid>
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+     <DockPanel><Button Content="Cập nhật" DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Click="Refresh_Click"/><TextBlock Text="REVISION TRONG PROJECT" FontWeight="Bold" VerticalAlignment="Center"/></DockPanel>
+     <TextBlock x:Name="RevisionCountLabel" Grid.Row="1" Foreground="{StaticResource Muted}" Margin="0,8,0,18"/>
+     <DataGrid x:Name="RevisionGrid" Grid.Row="2" Style="{StaticResource GridStyle}" RowHeight="40" ClipboardCopyMode="IncludeHeader" SelectionMode="Extended">
+      <DataGrid.Columns>
+       <DataGridTextColumn Header="Sequence" Binding="{Binding Sequence}" Width="120" MinWidth="120" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" MinWidth="280" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="180" MinWidth="180" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridCheckBoxColumn Header="Issued" Binding="{Binding Issued}" Width="110" MinWidth="110"/>
+      </DataGrid.Columns>
+     </DataGrid>
+    </Grid></Border>
+   </TabItem>
+   <TabItem Header="Placeholder Sheets">
+    <Border Style="{StaticResource Card}" Margin="0" Padding="20"><Grid>
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+     <DockPanel><Button Content="Cập nhật" DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Click="Refresh_Click"/><TextBlock Text="PLACEHOLDER SHEETS" FontWeight="Bold" VerticalAlignment="Center"/></DockPanel>
+     <TextBlock x:Name="PlaceholderCountLabel" Grid.Row="1" Foreground="{StaticResource Muted}" Margin="0,8,0,18"/>
+     <DataGrid x:Name="PlaceholderGrid" Grid.Row="2" Style="{StaticResource GridStyle}" RowHeight="40" ClipboardCopyMode="IncludeHeader" SelectionMode="Extended">
+      <DataGrid.Columns>
+       <DataGridTextColumn Header="Sheet Number" Binding="{Binding Number}" Width="320" MinWidth="260" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Sheet Name" Binding="{Binding Name}" Width="*" MinWidth="280" ElementStyle="{StaticResource CenteredGridText}"/>
+      </DataGrid.Columns>
+     </DataGrid>
+    </Grid></Border>
+   </TabItem>
+  </TabControl>
+  </Grid>
+  <Grid x:Name="FooterGrid" Grid.Row="3" Margin="32,10,32,14" Visibility="Collapsed"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <TextBlock x:Name="StatusLabel" VerticalAlignment="Center" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,20,0"/>
+   <Button Grid.Column="1" Content="Đóng" Style="{StaticResource SecondaryButton}" Click="Close_Click"/>
+  </Grid>
+  <Grid x:Name="LoadingPanel" Grid.Row="1" Grid.RowSpan="3" Background="#F5F2EE" Margin="32">
+   <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+   <Border CornerRadius="18" ClipToBounds="True" Background="#E8E2DA"><Image Source="/MEP_Sheet_Manager_Modeless;component/src/UI/Assets/sheet-splash.png" Stretch="UniformToFill"/></Border>
+   <StackPanel Grid.Row="1" Margin="0,24,0,12">
+    <TextBlock Text="Sắp xếp bản vẽ · Sẵn sàng cho ý tưởng mới" FontSize="25" FontWeight="SemiBold"/>
+    <TextBlock x:Name="LoadingLabel" Text="Đang chuẩn bị danh sách sheet…" Foreground="{StaticResource Muted}" Margin="0,10,0,14" TextWrapping="Wrap"/>
+    <ProgressBar x:Name="LoadingProgress" Height="5" IsIndeterminate="True" Foreground="{StaticResource Accent}" Background="#E8E2DA"/>
+    <Button x:Name="RetryLoadButton" Content="Thử tải lại" Style="{StaticResource SecondaryButton}" Click="RetryLoad_Click" Visibility="Collapsed" HorizontalAlignment="Left" Margin="0,12,0,0"/>
+   </StackPanel>
+  </Grid>
+ </Grid>
+</Window>
+
+
+
+
+
+
+
+
+
+
+

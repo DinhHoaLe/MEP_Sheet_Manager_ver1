@@ -1,0 +1,9 @@
+PASS: valid import preview in new project
+PASS: create 3 sheets from Excel in a new project
+PASS: exact names, numbers and leading zeros
+PASS: placeholder creation
+PASS: repeat import skips existing numbers
+PASS: reject duplicate numbers in Excel
+PASS: reject missing names and numbers
+PASS: transaction rolls back all sheets after creation failure
+New test project closed without saving. Existing user project unchanged by tests.

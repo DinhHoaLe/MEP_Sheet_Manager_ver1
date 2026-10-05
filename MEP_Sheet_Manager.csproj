@@ -1,0 +1,63 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <RevitVersion Condition="'$(RevitVersion)' == ''">2023</RevitVersion>
+    <RevitInstallDir Condition="'$(RevitInstallDir)' == ''">C:\Program Files\Autodesk\Revit $(RevitVersion)</RevitInstallDir>
+    <OutputType>Library</OutputType>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>MEP_Sheet_Manager_Modeless</AssemblyName>
+    <RootNamespace>MEP_Sheet_Manager</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\$(Configuration)\Revit$(RevitVersion)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\Revit$(RevitVersion)\</IntermediateOutputPath>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="RevitAPI"><HintPath>$(RevitInstallDir)\RevitAPI.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="RevitAPIUI"><HintPath>$(RevitInstallDir)\RevitAPIUI.dll</HintPath><Private>False</Private></Reference>
+    <Compile Include="src\Commands\GetAllSheetNamesCommand.cs" />
+    <Compile Include="src\Models\SheetInfo.cs" /><Compile Include="src\Models\SheetBrowserInfo.cs" /><Compile Include="src\Services\Revit\SheetBrowserService.cs" />
+    <Compile Include="src\Models\ProjectListInfo.cs" />
+    <Compile Include="src\Models\SheetViewAssignment.cs" />
+    <Compile Include="src\Models\SheetLayoutInfo.cs" />
+    <Compile Include="src\Models\SheetLayoutMargins.cs" />
+    <Compile Include="src\Services\Excel\SheetLayoutFile.cs" />
+    <Compile Include="src\Services\Revit\SheetLayoutPreviewService.cs" />
+    <Compile Include="src\UI\Wpf\SheetLayoutPreviewWindow.xaml.cs"><DependentUpon>SheetLayoutPreviewWindow.xaml</DependentUpon></Compile>
+    <Page Include="src\UI\Wpf\SheetLayoutPreviewWindow.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>
+    <Compile Include="src\Services\Revit\FloorPlanPlacementService.cs" />
+    <Compile Include="src\Services\Revit\ScopeBoxAlignmentService.cs" />
+    <Compile Include="src\Services\Revit\TitleBlockPreviewService.cs" />
+    <Compile Include="src\Services\Revit\ProjectListService.cs" />
+    <Compile Include="src\Services\Revit\SheetService.cs" />
+    <Compile Include="src\Services\Excel\SheetWorkbook.cs" />
+    <Compile Include="src\Services\Excel\SheetJsonFile.cs" />
+    <Resource Include="src\UI\Assets\sheet-splash.png" />
+    <Compile Include="src\Infrastructure\SheetExternalEventHandler.cs" />
+    <Compile Include="src\UI\Wpf\SheetManagerWindow.xaml.cs"><DependentUpon>SheetManagerWindow.xaml</DependentUpon></Compile>
+    <Page Include="src\UI\Wpf\SheetManagerWindow.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
+
+
+
+
+
+
+
+

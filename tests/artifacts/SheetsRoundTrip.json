@@ -1,0 +1,20 @@
+{
+  "sheets": [
+    {
+      "isPlaceholder": false,
+      "sheetName": "Điện & nước \"Tầng 1\"\nZone A",
+      "sheetNumber": "001.01"
+    },
+    {
+      "isPlaceholder": true,
+      "sheetName": "Tên sheet trùng",
+      "sheetNumber": "A-002"
+    },
+    {
+      "isPlaceholder": false,
+      "sheetName": "Tên sheet trùng",
+      "sheetNumber": "A-003"
+    }
+  ],
+  "version": 1
+}

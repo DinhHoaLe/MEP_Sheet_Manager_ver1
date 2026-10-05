@@ -1,0 +1,6 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+  </Configurations>
+  <Project Path="MEP_Sheet_Manager.csproj" />
+</Solution>

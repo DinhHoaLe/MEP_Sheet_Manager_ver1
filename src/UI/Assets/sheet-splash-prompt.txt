@@ -1,0 +1,5 @@
+Generated with the built-in image_gen tool on 2026-10-04 (Asia/Saigon).
+Final asset: src/UI/Assets/sheet-splash.png. Embedded as a WPF Resource in the add-in DLL.
+
+Final prompt:
+Use case: stylized-concept. Asset type: landscape splash illustration for a desktop Revit sheet management tool. Create a refined architectural illustration of several white drawing sheets floating above a pale warm ivory desk, with detailed floor plan linework, small title block columns, thin teal and muted bronze MEP routes, and subtle isometric building volumes rising from one plan. Calm professional engineering aesthetic, soft studio shadows, restrained warm beige palette matching a modern WPF application, crisp beautiful paper details. Landscape composition, no people, no logos, no legible text, no watermark.

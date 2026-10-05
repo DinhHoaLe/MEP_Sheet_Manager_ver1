@@ -1,0 +1,9 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+ <PropertyGroup><OutputType>Library</OutputType><TargetFrameworkVersion>v4.8</TargetFrameworkVersion><AssemblyName>RevitSheetExcelTests</AssemblyName><OutputPath>bin\</OutputPath><PlatformTarget>x64</PlatformTarget></PropertyGroup>
+ <ItemGroup><Reference Include="System"/><Reference Include="System.Core"/><Reference Include="MEP_Sheet_Manager"><HintPath>..\bin\Release\Revit2023\MEP_Sheet_Manager_Modeless.dll</HintPath></Reference><Reference Include="RevitAPI"><HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPI.dll</HintPath><Private>False</Private></Reference><Reference Include="RevitAPIUI"><HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath><Private>False</Private></Reference><Compile Include="Revit\RevitSheetTests.cs"/><Compile Include="Revit\RevitScopeAlignmentTests.cs"/></ItemGroup>
+ <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+</Project>
+
+
+
+
