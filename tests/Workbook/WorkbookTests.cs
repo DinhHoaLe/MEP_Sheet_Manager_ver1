@@ -31,7 +31,7 @@ class WorkbookTests {
     var e=z.GetEntry("xl/worksheets/sheet1.xml");string xml;using(var r=new StreamReader(e.Open()))xml=r.ReadToEnd();e.Delete();xml=xml.Replace("<is>","<f>1+1</f><is>");using(var w=new StreamWriter(z.CreateEntry("xl/worksheets/sheet1.xml").Open()))w.Write(xml);
    }
    bool rejected=false;try{SheetWorkbook.Read(formula);}catch(InvalidDataException){rejected=true;}Check(rejected,"reject formulas instead of stale cached values");
-   LayoutTests.Run(folder); JsonTests.Run(folder); SheetUiTests.Run(); Console.WriteLine("All workbook, layout, JSON and filter tests passed.");return 0;
+   LayoutTests.Run(folder); JsonTests.Run(folder); SheetUiTests.Run(); SheetToolsTests.Run(folder); Console.WriteLine("All workbook, layout, JSON, filter and tab tool tests passed.");return 0;
   }catch(Exception ex){Console.Error.WriteLine(ex);return 1;}
  }
 }

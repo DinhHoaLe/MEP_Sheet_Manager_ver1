@@ -65,6 +65,21 @@
       <TextBlock x:Name="ListHeading" Text="SHEET TRONG PROJECT" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,12,0"/>
      </DockPanel>
      <StackPanel Grid.Row="1" Margin="0,8,0,14">
+      <WrapPanel Margin="0,0,0,8">
+       <Button Content="Batch Actions ▾" Style="{StaticResource SecondaryButton}" Click="ToolsMenu_Click" Margin="0,0,8,4"><Button.ContextMenu><ContextMenu>
+        <MenuItem Header="Chọn tất cả dòng đang hiển thị" Click="BatchSelect_Click" Tag="all"/>
+        <MenuItem Header="Bỏ chọn tất cả" Click="BatchSelect_Click" Tag="none"/>
+        <MenuItem Header="Nhân bản sheet trống (title block, không view)" Click="DuplicateSheets_Click"/>
+        <MenuItem Header="Đổi title block" Click="ChangeTitleBlock_Click"/>
+        <MenuItem Header="Xóa sheet đã chọn" Click="DeleteSheets_Click"/>
+       </ContextMenu></Button.ContextMenu></Button>
+       <Button Content="Save V/S Set" Style="{StaticResource SecondaryButton}" Click="SaveSet_Click" Margin="0,0,8,4"/>
+       <Button Content="Rename ▾" Style="{StaticResource SecondaryButton}" Click="ToolsMenu_Click" Margin="0,0,8,4"><Button.ContextMenu><ContextMenu>
+        <MenuItem Header="Đổi Sheet Number" Click="RenameSheets_Click" Tag="number"/><MenuItem Header="Đổi Sheet Name" Click="RenameSheets_Click" Tag="name"/>
+       </ContextMenu></Button.ContextMenu></Button>
+       <Button Content="Parameters" Style="{StaticResource SecondaryButton}" Click="Parameters_Click" Margin="0,0,8,4"/>
+       <ComboBox x:Name="SheetSetFilter" Width="180" DisplayMemberPath="Name" ToolTip="Filter by V/S Sets" Padding="8" Margin="0,0,0,4" SelectionChanged="SetFilter_Changed"/>
+      </WrapPanel>
       <TextBlock x:Name="CountLabel" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,10"/>
       <WrapPanel>
        <TextBlock Text="Search" VerticalAlignment="Center" Margin="0,0,8,0"/><TextBox x:Name="SheetSearch" Width="220" Style="{StaticResource Input}" Margin="0,0,8,0" ToolTip="Tìm theo Sheet Number hoặc Sheet Name" TextChanged="Search_Changed"/>
@@ -82,7 +97,6 @@
         <Button Grid.Column="1" x:Name="CreateButton" Content="Tạo sheet trong project" Style="{StaticResource PrimaryButton}" Click="Create_Click" IsEnabled="False" VerticalAlignment="Bottom"/>
        </Grid>
        <StackPanel x:Name="ManualPanel" Visibility="Collapsed" Margin="0,8,0,0">
-        <TextBlock Text="TẠO SHEET THỦ CÔNG" FontWeight="SemiBold" Margin="0,0,0,8"/>
         <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
          <TextBox x:Name="ManualNumber" Style="{StaticResource Input}" Margin="0,0,10,0" ToolTip="Sheet Number"/>
          <TextBox x:Name="ManualName" Grid.Column="1" Style="{StaticResource Input}" Margin="0,0,10,0" ToolTip="Sheet Name"/>
@@ -90,14 +104,14 @@
          <Button Grid.Column="3" Content="Thêm vào danh sách" Style="{StaticResource SecondaryButton}" Click="AddManual_Click"/>
         </Grid>
        </StackPanel>
-       <TextBlock Text="Sửa số/tên và tick Placeholder trong bảng. Xuất để lưu bản nháp; bấm Tạo sheet để ghi vào project." Foreground="{StaticResource Muted}" Margin="0,10,0,0" TextWrapping="Wrap"/>
       </StackPanel>
      </Border>
-     <DataGrid x:Name="SheetGrid" Grid.Row="3" Style="{StaticResource GridStyle}" RowHeight="48" ClipboardCopyMode="IncludeHeader" SelectionMode="Extended" CellEditEnding="SheetEditEnding">
+     <DataGrid x:Name="SheetGrid" Grid.Row="3" Style="{StaticResource GridStyle}" RowHeight="40" ColumnHeaderHeight="36" ClipboardCopyMode="IncludeHeader" SelectionMode="Extended" CellEditEnding="SheetEditEnding">
       <DataGrid.Columns>
        <DataGridTemplateColumn Header="Placeholder" Width="130" MinWidth="130" IsReadOnly="True"><DataGridTemplateColumn.CellTemplate><DataTemplate>
         <CheckBox IsChecked="{Binding IsPlaceholder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CanEdit}" Click="Placeholder_Click" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="Tick khi nhập/tạo sheet mới. Sheet đang tồn tại chỉ hiển thị trạng thái."/>
        </DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+       <DataGridTemplateColumn Header="Chọn" Width="60"><DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center"/></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
        <DataGridTextColumn Header="Sheet Number" Binding="{Binding Number, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" MinWidth="180" ElementStyle="{StaticResource CenteredGridText}"/>
        <DataGridTextColumn Header="Sheet Name" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" MinWidth="230" ElementStyle="{StaticResource CenteredGridText}"/>
        <DataGridTextColumn x:Name="RowColumn" Header="Dòng dữ liệu" Binding="{Binding ExcelRow}" Width="110" MinWidth="110" Visibility="Collapsed" IsReadOnly="True"/>
@@ -115,6 +129,15 @@
      </StackPanel><TextBlock Text="CHỌN FLOOR PLAN CHO TỪNG SHEET" FontWeight="Bold" VerticalAlignment="Center"/></DockPanel>
      <Grid Grid.Row="1" Margin="0,10,0,14"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
       <StackPanel Margin="0,0,18,0">
+       <WrapPanel Margin="0,0,0,8">
+        <Button Content="View Manager" Style="{StaticResource SecondaryButton}" Click="ViewManager_Click" Margin="0,0,8,4"/>
+        <Button Content="Import/Export ▾" Style="{StaticResource SecondaryButton}" Click="ToolsMenu_Click" Margin="0,0,8,4"><Button.ContextMenu><ContextMenu>
+         <MenuItem Header="Xuất Excel" Click="ExportTab_Click" Tag="xlsx"/><MenuItem Header="Xuất JSON" Click="ExportTab_Click" Tag="json"/><MenuItem Header="Nạp Excel / JSON (xem trước)" Click="ImportTab_Click"/>
+        </ContextMenu></Button.ContextMenu></Button>
+        <ComboBox x:Name="ViewTemplateFilter" Width="170" ToolTip="Template: lọc Floor Plan theo View Template" Padding="8" Margin="0,0,8,4" SelectionChanged="TemplateFilter_Changed"/>
+        <ComboBox x:Name="ViewSetFilter" Width="170" DisplayMemberPath="Name" ToolTip="Filter by V/S Sets" Padding="8" Margin="0,0,8,4" SelectionChanged="SetFilter_Changed"/>
+        <CheckBox x:Name="ShowExistingViews" Content="Show Existing Sheets" IsChecked="True" VerticalAlignment="Center" Margin="0,0,0,4" Click="ExistingViews_Click" ToolTip="Bỏ tick để chỉ hiện sheet chưa đặt Floor Plan"/>
+       </WrapPanel>
        <TextBlock x:Name="ViewCountLabel" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,10"/>
        <WrapPanel>
         <TextBlock Text="Search" VerticalAlignment="Center" Margin="0,0,8,6"/><TextBox x:Name="ViewSearch" Width="200" Style="{StaticResource Input}" Margin="0,0,8,6" ToolTip="Tìm theo Sheet Number hoặc Sheet Name" TextChanged="Search_Changed"/>
@@ -153,14 +176,28 @@
    <TabItem Header="Revision List">
     <Border Style="{StaticResource Card}" Margin="0" Padding="20"><Grid>
      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
-     <DockPanel><Button Content="Cập nhật" DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Click="Refresh_Click"/><TextBlock Text="REVISION TRONG PROJECT" FontWeight="Bold" VerticalAlignment="Center"/></DockPanel>
-     <TextBlock x:Name="RevisionCountLabel" Grid.Row="1" Foreground="{StaticResource Muted}" Margin="0,8,0,18"/>
+     <WrapPanel>
+      <Button Content="Revisions" Style="{StaticResource SecondaryButton}" Click="RevisionsManager_Click" Margin="0,0,8,4"/>
+      <Button Content="Import/Export ▾" Style="{StaticResource SecondaryButton}" Click="ToolsMenu_Click" Margin="0,0,8,4"><Button.ContextMenu><ContextMenu>
+       <MenuItem Header="Xuất Excel" Click="ExportTab_Click" Tag="xlsx"/><MenuItem Header="Xuất JSON" Click="ExportTab_Click" Tag="json"/><MenuItem Header="Nạp Excel / JSON (xem trước)" Click="ImportTab_Click"/>
+      </ContextMenu></Button.ContextMenu></Button>
+      <ComboBox x:Name="RevisionSetFilter" Width="170" DisplayMemberPath="Name" ToolTip="Filter by V/S Sets" Padding="8" Margin="0,0,8,4" SelectionChanged="SetFilter_Changed"/>
+      <Button Content="Filter Project Browser ▾" Style="{StaticResource SecondaryButton}" Click="BrowserFilter_Click" Margin="0,0,8,4"/>
+      <ComboBox x:Name="RevisionBrowserGroup" Width="200" DisplayMemberPath="Label" Padding="8" Margin="0,0,8,4" Visibility="Collapsed" SelectionChanged="BrowserGroup_Changed"/>
+      <TextBox x:Name="RevisionSearch" Width="170" Padding="8" ToolTip="Search Sheet Number / Sheet Name" Margin="0,0,8,4" TextChanged="Search_Changed"/>
+      <Button Content="Cập nhật" Style="{StaticResource SecondaryButton}" Click="Refresh_Click"/>
+     </WrapPanel>
+     <TextBlock x:Name="RevisionCountLabel" Grid.Row="1" Foreground="{StaticResource Muted}" Margin="0,8,0,18" TextWrapping="Wrap"/>
      <DataGrid x:Name="RevisionGrid" Grid.Row="2" Style="{StaticResource GridStyle}" RowHeight="40" ClipboardCopyMode="IncludeHeader" SelectionMode="Extended">
       <DataGrid.Columns>
-       <DataGridTextColumn Header="Sequence" Binding="{Binding Sequence}" Width="120" MinWidth="120" ElementStyle="{StaticResource CenteredGridText}"/>
-       <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" MinWidth="280" ElementStyle="{StaticResource CenteredGridText}"/>
-       <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="180" MinWidth="180" ElementStyle="{StaticResource CenteredGridText}"/>
-       <DataGridCheckBoxColumn Header="Issued" Binding="{Binding Issued}" Width="110" MinWidth="110"/>
+       <DataGridTextColumn Header="Sheet Number" Binding="{Binding Number}" Width="160" MinWidth="160" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Sheet Name" Binding="{Binding Name}" Width="*" MinWidth="180" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTemplateColumn Header="Revisions" Width="180" MinWidth="180"><DataGridTemplateColumn.CellTemplate><DataTemplate>
+        <Button Content="{Binding Summary}" ToolTip="Chọn nhiều revision cho sheet" Click="ChooseRevisions_Click" Margin="4,6" Padding="6" MinWidth="80"/>
+       </DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+       <DataGridTextColumn Header="Current Revision" Binding="{Binding CurrentNumber}" Width="135" MinWidth="135" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Current Date" Binding="{Binding CurrentDate}" Width="120" MinWidth="120" ElementStyle="{StaticResource CenteredGridText}"/>
+       <DataGridTextColumn Header="Current Description" Binding="{Binding CurrentDescription}" Width="190" MinWidth="190" ElementStyle="{StaticResource CenteredGridText}"/>
       </DataGrid.Columns>
      </DataGrid>
     </Grid></Border>
@@ -182,7 +219,12 @@
   </Grid>
   <Grid x:Name="FooterGrid" Grid.Row="3" Margin="32,10,32,14" Visibility="Collapsed"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
    <TextBlock x:Name="StatusLabel" VerticalAlignment="Center" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,20,0"/>
-   <Button Grid.Column="1" Content="Đóng" Style="{StaticResource SecondaryButton}" Click="Close_Click"/>
+   <StackPanel Grid.Column="1" Orientation="Horizontal">
+    <Button Content="Previous" Style="{StaticResource SecondaryButton}" Click="PreviousTab_Click" Margin="0,0,8,0"/>
+    <Button Content="Next" Style="{StaticResource SecondaryButton}" Click="NextTab_Click" Margin="0,0,8,0"/>
+    <Button Content="Apply" Style="{StaticResource PrimaryButton}" Click="ApplyTab_Click" Margin="0,0,8,0"/>
+    <Button Content="Đóng" Style="{StaticResource SecondaryButton}" Click="Close_Click"/>
+   </StackPanel>
   </Grid>
   <Grid x:Name="LoadingPanel" Grid.Row="1" Grid.RowSpan="3" Background="#F5F2EE" Margin="32">
    <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>

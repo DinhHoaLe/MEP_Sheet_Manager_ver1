@@ -196,3 +196,33 @@ TRẠNG THÁI CHỈ Ở STEP 2
 - Từng sheet dùng một transaction riêng, không giữ transaction qua ExternalEvent. Sheet đã Done được giữ nếu dòng khác lỗi; Undo riêng từng sheet.
 - Sau hoàn tất đọc lại lựa chọn floor plan và giữ trạng thái kết quả trong bảng.
 - Tests nền đã qua; chưa chạy tiến độ mới trực tiếp trên model Revit ở lượt sửa này.
+
+CẬP NHẬT CÁC TAB THEO ẢNH THAM KHẢO (06/10/2026)
+Sheet List:
+- Tick cột Chọn (Placeholder vẫn cột đầu) hoặc Ctrl/Shift chọn dòng. Thao tác dùng các dòng tick đang hiển thị; nếu không tick, dùng các dòng được chọn.
+- Batch Actions: chọn tất cả dòng đang hiển thị, bỏ chọn toàn bộ, nhân bản sheet TRỐNG cùng loại title block, đổi title block, xóa sheet.
+- Nhân bản sheet không sao chép viewport/view/annotation, tự thêm -COPY để tránh trùng số.
+- Rename: Sheet Number hoặc Sheet Name, tìm/thay thế, tiền tố/hậu tố, xem trước Before/After. Kiểm tra trùng số trước khi lưu, hỗ trợ hoán đổi số sheet.
+- Rename cũng dùng được trên bản nháp nhập/tạo thủ công.
+- Parameters: sửa giá trị chung của parameter có thể ghi trên các sheet đã chọn. String/Integer/Double; Double dùng đơn vị hiển thị Revit; Yes/No nhập 1/0. Không sửa ElementId hoặc parameter chỉ đọc.
+- Save V/S Set: tạo bộ sheet native của Revit bằng tên mới, không thực hiện in. Chỉ sheet thường; không gồm placeholder. Filter V/S Sets được nạp từ project.
+View List:
+- View Manager: tìm Floor Plan, sửa tên/scale/template, Duplicate, With Detailing, As Dependent. Các thao tác có Undo.
+- Template: All hoặc một template để lọc lựa chọn Floor Plan. View đang chọn được giữ dù ngoài bộ lọc.
+- V/S Set filter kết hợp Search và Project Browser filter. Bỏ Show Existing Sheets để chỉ hiện sheet chưa có Floor Plan.
+- Import/Export Excel/JSON theo sheet: SheetNumber, SheetName, FloorPlanName (lựa chọn muốn áp dụng), CurrentFloorPlans (thông tin hiện hữu, chỉ xuất).
+- FloorPlanName trống nghĩa là không yêu cầu đặt view, không xóa view hiện có. Import khớp tên view chính xác; view phải khả dụng trên sheet.
+- Vị trí vẫn Preview/Nạp/Lưu XML riêng; canh scope box/viewport, trái 44 mm, phải 94 mm giữ nguyên.
+Revision List:
+- Mỗi dòng là sheet; chọn nhiều Revisions bằng nút trên dòng, có Current Revision/Date/Description đọc từ sheet.
+- Revisions: tạo/sửa Description, Date, Issued của revision project. Không xóa revision bằng tool này.
+- Revision từ cloud không thể bỏ bằng tick; chỉ quản lý Additional Revisions. Apply chỉ ghi những sheet có thay đổi.
+- Search, V/S Set và Project Browser filter. Import/Export Excel/JSON gồm lựa chọn additional revision và thông tin current revision chỉ xuất.
+- AdditionalRevisionKeys là mảng JSON text các khóa Sequence | Date | Description. Project đích phải có revision khớp trước khi import.
+- Import View/Revision chỉ cập nhật bản xem trước. Bấm Apply mới ghi project; tất cả dòng được kiểm tra trước khi sửa snapshot.
+- Previous/Next chuyển tab; Apply theo tab hiện hành. Waiting/Running/Done theo từng sheet vẫn chỉ ở Step 2 khi đặt Floor Plan.
+Kiểm thử:
+- test.ps1 đã qua build, Excel/JSON round trip, import nguyên vẹn khi có lỗi, trùng view, template filter, rename rule, và render UI nền.
+- Giao diện Sheet/Manual/View/Revision được render kiểm tra, không điều khiển chuột hoặc bàn phím máy người dùng.
+- Chưa chạy chức năng mới trên project Revit thực tế. Test tích hợp đã build trong tests/bin/RevitSheetExcelTests.dll, class RevitTabToolsTests, chạy Add-in Manager Manual Mode. Bài test tạo dữ liệu tạm và rollback toàn bộ trong TransactionGroup.
+- DLL chính bin/Release/Revit2023/MEP_Sheet_Manager_Modeless.dll; class MEP_Sheet_Manager.GetAllSheetNamesCommand. Nếu Revit giữ DLL cũ trong bộ nhớ, mở lại Revit để nạp bản mới.

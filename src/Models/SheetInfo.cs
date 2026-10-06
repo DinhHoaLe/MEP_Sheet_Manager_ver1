@@ -2,6 +2,7 @@ namespace MEP_Sheet_Manager
 {
     public sealed class SheetInfo
     {
+        public bool IsChecked { get; set; }
         public string Number { get; set; }
         public string Name { get; set; }
         public bool IsPlaceholder { get; set; }

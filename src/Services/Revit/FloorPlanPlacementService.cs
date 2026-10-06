@@ -29,7 +29,8 @@ namespace MEP_Sheet_Manager
                     .Select(v => names[v.ViewId]).OrderBy(n => n, StringComparer.OrdinalIgnoreCase)),
                 FloorPlans = new[] { new FloorPlanChoice { Id = -1, Name = "<Không chọn>" } }.Concat(
                     plans.Where(p => !placed.Contains(p.Id) || viewports.Any(v => v.SheetId == sheet.Id && v.ViewId == p.Id))
-                        .Select(p => new FloorPlanChoice { Id = p.Id.IntegerValue, UniqueId = p.UniqueId, Name = p.Name })).ToList()
+                        .Select(p => new FloorPlanChoice { Id = p.Id.IntegerValue, UniqueId = p.UniqueId, Name = p.Name,
+                            TemplateName = (document.GetElement(p.ViewTemplateId) as View)?.Name ?? "<None>" })).ToList()
             }).ToList();
             foreach (var row in assignments) row.SelectedFloorPlan = row.FloorPlans[0];
             return assignments;

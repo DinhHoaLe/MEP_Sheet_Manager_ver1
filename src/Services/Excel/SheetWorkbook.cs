@@ -56,7 +56,7 @@ namespace MEP_Sheet_Manager
             }
             finally { if (File.Exists(temp)) File.Delete(temp); }
         }
-        private static XDocument Load(ZipArchive zip, string path)
+        internal static XDocument Load(ZipArchive zip, string path)
         {
             var entry = zip.GetEntry(path);
             if (entry == null) throw new InvalidDataException("Thiếu thành phần Excel: " + path);
@@ -101,9 +101,9 @@ namespace MEP_Sheet_Manager
                 return result;
             }
         }
-        private static string Column(XElement cell)
+        internal static string Column(XElement cell)
         { return new string(((string)cell.Attribute("r") ?? "").TakeWhile(char.IsLetter).ToArray()); }
-        private static string Value(XElement cell, List<string> shared)
+        internal static string Value(XElement cell, List<string> shared)
         {
             if (cell.Element(S + "f") != null) throw new InvalidDataException("Dùng giá trị text, không dùng công thức tại ô " + (string)cell.Attribute("r"));
             string type = (string)cell.Attribute("t"), value = (string)cell.Element(S + "v") ?? "";

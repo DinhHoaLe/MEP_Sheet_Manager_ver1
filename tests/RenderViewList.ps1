@@ -11,6 +11,8 @@ $taskImage=$taskXaml.SelectSingleNode('//*[local-name()="Image"]');$taskImage.Se
 $taskReader=New-Object System.Xml.XmlNodeReader $taskXaml
 $taskWindow=[Windows.Markup.XamlReader]::Load($taskReader)
 $taskWindow.FindName('LoadingPanel').Visibility='Collapsed';foreach($taskName in @('HeaderPanel','BodyGrid','FooterGrid')){$taskWindow.FindName($taskName).Visibility='Visible'}
+$taskWindow.FindName('ViewTemplateFilter').ItemsSource=@('Template: All','MEP - Electrical');$taskWindow.FindName('ViewTemplateFilter').SelectedIndex=0
+$taskWindow.FindName('ViewSetFilter').ItemsSource=@([pscustomobject]@{Name='V/S Sets: All'});$taskWindow.FindName('ViewSetFilter').SelectedIndex=0
 $taskTabs=$taskWindow.FindName('MainTabs');$taskTabs.SelectedIndex=1
 $taskWindow.FindName('SheetActions').Visibility='Collapsed'
 $taskWindow.FindName('ActionsColumn').Width=0

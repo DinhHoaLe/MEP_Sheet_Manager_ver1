@@ -9,6 +9,7 @@ namespace MEP_Sheet_Manager
         public string UniqueId { get; set; }
         public string Name { get; set; }
         public string ScopeName { get; set; }
+        public string TemplateName { get; set; }
     }
     public sealed class SheetViewAssignment : INotifyPropertyChanged
     {
@@ -18,6 +19,14 @@ namespace MEP_Sheet_Manager
         public string Name { get; set; }
         public string CurrentFloorPlans { get; set; }
         public IList<FloorPlanChoice> FloorPlans { get; set; }
+        public IList<FloorPlanChoice> AllFloorPlans { get; set; }
+        public void FilterTemplates(string template)
+        {
+            if (AllFloorPlans == null) AllFloorPlans = FloorPlans;
+            FloorPlans = new List<FloorPlanChoice>(System.Linq.Enumerable.Where(AllFloorPlans,
+                p => p.Id < 1 || string.IsNullOrEmpty(template) || p.TemplateName == template || ReferenceEquals(p, selectedFloorPlan)));
+            Notify("FloorPlans");
+        }
         private FloorPlanChoice selectedFloorPlan;
         public FloorPlanChoice SelectedFloorPlan
         {

@@ -92,3 +92,13 @@ FloorPlanPlacementService.Validate provides batch preflight; Place remains atomi
 UI PlacePlansSteps calls Place for one sheet per request, sets Done only after commit; failed rows get Error.
 Iterator disposal cancels remaining Waiting/Running entries without reverting earlier committed sheets.
 SheetViewAssignment processing state starts blank and resets on view/coordinate change.
+
+TAB TOOLS (06/10/2026)
+- SheetToolsInfo.cs: snapshot rows for V/S sets, sheet revisions, plan manager, editable parameters; RenameRule has no Revit dependency.
+- SheetToolsService.cs: all Revit reads/writes inside ExternalEvent; shared atomic transaction wrapper rolls back on errors. Native V/S Set creation restores print range/current set without printing.
+- SheetManagerTools.cs: partial UI controller for selection, batch actions, preview rename, parameter form, view/revision dialogs, import/export and navigation.
+- ToolDialog.cs: small reusable snapshot forms, no document access.
+- TabularFile.cs: atomic Open XML/JSON tab exports, literal strings, shared-string input, no formulas on import; type/schema/version validation.
+- SheetTabImport.cs: preflight all records and cross-sheet view uniqueness before applying any snapshot selection. Revision import retains cloud selections.
+- Revision updates only modified rows; stale additional/cloud revision sets and changed revision keys block writes until refresh.
+- New tests: SheetToolsTests (offline), RevitTabToolsTests (compiled, runtime not executed), RevisionList UI previews. Existing sheet/layout/status tests still pass.

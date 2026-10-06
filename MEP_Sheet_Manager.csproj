@@ -31,6 +31,12 @@
     <Reference Include="RevitAPIUI"><HintPath>$(RevitInstallDir)\RevitAPIUI.dll</HintPath><Private>False</Private></Reference>
     <Compile Include="src\Commands\GetAllSheetNamesCommand.cs" />
     <Compile Include="src\Models\SheetInfo.cs" /><Compile Include="src\Models\SheetBrowserInfo.cs" /><Compile Include="src\Services\Revit\SheetBrowserService.cs" />
+    <Compile Include="src\Models\SheetToolsInfo.cs" />
+    <Compile Include="src\Services\Revit\SheetToolsService.cs" />
+    <Compile Include="src\Services\Excel\TabularFile.cs" />
+    <Compile Include="src\Services\Excel\SheetTabImport.cs" />
+    <Compile Include="src\UI\Wpf\ToolDialog.cs" />
+    <Compile Include="src\UI\Wpf\SheetManagerTools.cs" />
     <Compile Include="src\Models\ProjectListInfo.cs" />
     <Compile Include="src\Models\SheetViewAssignment.cs" />
     <Compile Include="src\Models\SheetLayoutInfo.cs" />

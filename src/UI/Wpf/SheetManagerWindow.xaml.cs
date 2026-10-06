@@ -144,9 +144,7 @@ namespace MEP_Sheet_Manager
             PlaceholderGrid.ItemsSource = placeholders;
             PlaceholderCountLabel.Text = placeholders.Count + " placeholder sheet. Tạo mới qua tab Sheet List hoặc cột IsPlaceholder trong Excel.";
             RefreshFloorPlans();
-            var revisions = ProjectListService.ReadRevisions(document);
-            RevisionGrid.ItemsSource = revisions;
-            RevisionCountLabel.Text = revisions.Count + " revision. Sequence là thứ tự trong project, không phải số revision trên từng sheet.";
+            RefreshToolData();
             StatusLabel.Text = "Có thể thao tác Revit khi tool đang mở. Danh sách hiện tại để cập nhật sheet và title block.";
             CreateButton.IsEnabled = false;
             ApplySheetFilters();
@@ -163,6 +161,14 @@ namespace MEP_Sheet_Manager
             ViewGrid.ItemsSource = new System.Windows.Data.ListCollectionView(floorPlanAssignments);
             if (floorPlanAssignments.Count > 0) ViewGrid.SelectedIndex = 0;
             int available = floorPlanAssignments.SelectMany(r => r.FloorPlans).Where(p => p.Id > 0).Select(p => p.Id).Distinct().Count();
+            bindingFilters = true;
+            var oldTemplate = ViewTemplateFilter.SelectedItem as string;
+            ViewTemplateFilter.ItemsSource = new[] { "Template: All" }.Concat(floorPlanAssignments.SelectMany(r => r.FloorPlans)
+                .Where(p => p.Id > 0).Select(p => p.TemplateName ?? "<None>").Distinct().OrderBy(n => n)).ToList();
+            ViewTemplateFilter.SelectedItem = oldTemplate;
+            if (ViewTemplateFilter.SelectedIndex < 0) ViewTemplateFilter.SelectedIndex = 0;
+            bindingFilters = false;
+            FilterPlanChoices();
             ViewCountLabel.Text = floorPlanAssignments.Count + " sheet thường. " + available
                 + " floor plan có thể chọn. Có thể chọn plan chưa đặt hoặc plan đang có trên chính sheet này, rồi Preview bố trí.";
             UpdateCreateButton();
@@ -177,7 +183,7 @@ namespace MEP_Sheet_Manager
             options.AddRange(browserRows.Values.Where(r => r.Visible).Select(r => r.Path).Distinct().OrderBy(p => p)
                 .Select(p => new BrowserFilterOption { Label = string.IsNullOrEmpty(p) ? "Không có nhóm" : p, Path = p, UseBrowser = true }));
             bindingFilters = true;
-            foreach (var combo in new[] { SheetBrowserGroup, ViewBrowserGroup }) {
+            foreach (var combo in new[] { SheetBrowserGroup, ViewBrowserGroup, RevisionBrowserGroup }) {
                 string path = (combo.SelectedItem as BrowserFilterOption)?.Path;
                 bool use = (combo.SelectedItem as BrowserFilterOption)?.UseBrowser == true;
                 combo.ItemsSource = options;
@@ -187,26 +193,30 @@ namespace MEP_Sheet_Manager
         }
         private void ApplySheetFilters()
         {
-            if (bindingFilters || SheetSearch == null || ViewSearch == null) return;
+            if (bindingFilters || SheetSearch == null || ViewSearch == null || RevisionSearch == null || RevisionSetFilter == null || ShowExistingViews == null) return;
             Action<System.Windows.Controls.DataGrid, string, BrowserFilterOption> apply = (grid, search, option) => {
                 var view = grid.ItemsSource as System.ComponentModel.ICollectionView;
                 if (view == null) return;
                 view.Filter = item => {
-                    var sheet = item as SheetInfo; var plan = item as SheetViewAssignment;
-                    int id = sheet != null ? sheet.SheetId : plan.SheetId;
+                    var sheet = item as SheetInfo; var plan = item as SheetViewAssignment; var revision = item as SheetRevisionRow;
+                    int id = sheet != null ? sheet.SheetId : plan != null ? plan.SheetId : revision.SheetId;
                     SheetBrowserInfo browser; browserRows.TryGetValue(id, out browser);
-                    return SheetListFilter.Matches(sheet != null ? sheet.Number : plan.Number,
-                        sheet != null ? sheet.Name : plan.Name, search, sheet != null && sheet.CanEdit ? null : option, browser);
+                    var set = (grid == SheetGrid ? SheetSetFilter : grid == ViewGrid ? ViewSetFilter : RevisionSetFilter).SelectedItem as SheetSetInfo;
+                    if (sheet?.CanEdit != true && set != null && set.Id > 0 && !set.SheetIds.Contains(id)) return false;
+                    if (plan != null && ShowExistingViews.IsChecked != true && !string.IsNullOrEmpty(plan.CurrentFloorPlans)) return false;
+                    return SheetListFilter.Matches(sheet != null ? sheet.Number : plan != null ? plan.Number : revision.Number,
+                        sheet != null ? sheet.Name : plan != null ? plan.Name : revision.Name, search, sheet != null && sheet.CanEdit ? null : option, browser);
                 };
             };
             apply(SheetGrid, SheetSearch.Text, SheetBrowserGroup.SelectedItem as BrowserFilterOption);
             apply(ViewGrid, ViewSearch.Text, ViewBrowserGroup.SelectedItem as BrowserFilterOption);
+            apply(RevisionGrid, RevisionSearch.Text, RevisionBrowserGroup.SelectedItem as BrowserFilterOption);
         }
         private void Search_Changed(object sender, System.Windows.Controls.TextChangedEventArgs e) { ApplySheetFilters(); }
         private void BrowserGroup_Changed(object sender, System.Windows.Controls.SelectionChangedEventArgs e) { ApplySheetFilters(); }
         private void BrowserFilter_Click(object sender, RoutedEventArgs e)
         {
-            var combo = MainTabs.SelectedIndex == 1 ? ViewBrowserGroup : SheetBrowserGroup;
+            var combo = MainTabs.SelectedIndex == 1 ? ViewBrowserGroup : MainTabs.SelectedIndex == 2 ? RevisionBrowserGroup : SheetBrowserGroup;
             bool show = combo.Visibility != System.Windows.Visibility.Visible;
             combo.Visibility = show ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
             combo.SelectedIndex = show ? 1 : 0;
@@ -215,12 +225,12 @@ namespace MEP_Sheet_Manager
         {
             if (pending) return;
             if (MainTabs.SelectedIndex == 0 && imported != null) {
-                var draft = SheetGrid.SelectedItems.Cast<SheetInfo>().ToList();
+                var draft = SelectedSheets();
                 foreach (var row in draft) imported.Remove(row);
                 QueueRequest(ValidateDraft); return;
             }
             var ids = MainTabs.SelectedIndex == 1 ? ViewGrid.SelectedItems.Cast<SheetViewAssignment>().Select(r => r.SheetId).ToList()
-                : SheetGrid.SelectedItems.Cast<SheetInfo>().Select(r => r.SheetId).ToList();
+                : SelectedSheets().Select(r => r.SheetId).ToList();
             var selected = (projectSheets ?? new List<SheetInfo>()).Where(r => ids.Contains(r.SheetId)).ToList();
             if (selected.Count == 0) { StatusLabel.Text = "Chọn sheet cần xóa trong bảng."; return; }
             string names = string.Join("\n", selected.Take(15).Select(r => r.Number + " · " + r.Name));

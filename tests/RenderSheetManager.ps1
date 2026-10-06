@@ -24,6 +24,7 @@ function Save-TaskUi([string]$taskName,[int]$taskWidth=1180,[int]$taskHeight=790
  $taskContent.Width=$taskWidth;$taskContent.Height=$taskHeight
  $taskContent.Measure((New-Object Windows.Size $taskWidth,$taskHeight))
  $taskContent.Arrange((New-Object Windows.Rect 0,0,$taskWidth,$taskHeight));$taskContent.UpdateLayout()
+ [Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke([Action]{}, [Windows.Threading.DispatcherPriority]::ApplicationIdle);$taskContent.UpdateLayout()
  $taskBitmap=New-Object Windows.Media.Imaging.RenderTargetBitmap $taskWidth,$taskHeight,96,96,([Windows.Media.PixelFormats]::Pbgra32)
  $taskBitmap.Render($taskContent)
  $taskEncoder=New-Object Windows.Media.Imaging.PngBitmapEncoder;$taskEncoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($taskBitmap))
@@ -40,6 +41,8 @@ $taskRow=New-Object MEP_Sheet_Manager.SheetInfo -ArgumentList 'A101','MẶT BẰ
 $taskRow=New-Object MEP_Sheet_Manager.SheetInfo -ArgumentList 'P001','DANH SÁCH SHEET DỰ KIẾN',$true;$taskRows.Add($taskRow)
 $taskGrid.ItemsSource=$taskRows
 $taskWindow.FindName('CountLabel').Text='2 sheet. 1 placeholder.'
+$taskSets=@([pscustomobject]@{Name='V/S Sets: All'},[pscustomobject]@{Name='MEP - Submission'})
+foreach($taskComboName in @('SheetSetFilter','ViewSetFilter','RevisionSetFilter')) {$taskWindow.FindName($taskComboName).ItemsSource=$taskSets;$taskWindow.FindName($taskComboName).SelectedIndex=0}
 Save-TaskUi 'SheetListPreview'
 $taskWindow.FindName('SheetActions').Visibility='Visible';$taskWindow.FindName('ManualPanel').Visibility='Visible'
 $taskWindow.FindName('TitleBlocks').ItemsSource=@([pscustomobject]@{Label='A1 Metric : A1 Standard'});$taskWindow.FindName('TitleBlocks').SelectedIndex=0
@@ -52,6 +55,7 @@ $taskWindow.FindName('StatusLabel').Text='Xuất dữ liệu để lưu bản nh
 $taskGrid.Items.Refresh()
 Save-TaskUi 'ManualSheetPreview'
 Save-TaskUi 'ManualSheetNarrowPreview' 940 720
+if($taskGrid.ActualHeight -lt 95){throw 'Manual layout must leave room for header and a visible sheet row'}
 $taskCheck=$taskGrid.Columns[0].CellTemplate.LoadContent()
 $taskCheck.DataContext=$taskRows[0]
 [Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke([Action]{}, [Windows.Threading.DispatcherPriority]::ApplicationIdle)
@@ -59,6 +63,15 @@ $taskCheck.GetBindingExpression([Windows.Controls.Primitives.ToggleButton]::IsCh
 $taskCheck.SetCurrentValue([Windows.Controls.Primitives.ToggleButton]::IsCheckedProperty, $true)
 $taskCheck.GetBindingExpression([Windows.Controls.Primitives.ToggleButton]::IsCheckedProperty).UpdateSource()
 if(-not $taskRows[0].IsPlaceholder){throw 'Placeholder tick did not update draft data'}
+$taskWindow.FindName('MainTabs').SelectedIndex=2
+$taskRevisionRows=@([pscustomobject]@{Number='A101';Name='MẶT BẰNG ĐIỆN TẦNG 1';Summary='1 · Phát hành lần đầu';CurrentNumber='P01';CurrentDate='06/10/2026';CurrentDescription='Phát hành lần đầu'},[pscustomobject]@{Number='A102';Name='MẶT BẰNG NƯỚC TẦNG 1';Summary='<None> ▾';CurrentNumber='';CurrentDate='';CurrentDescription=''})
+$taskWindow.FindName('RevisionGrid').ItemsSource=$taskRevisionRows
+$taskWindow.FindName('RevisionCountLabel').Text='2 sheet · Chọn nhiều revision cho từng sheet, rồi bấm Apply.'
+$taskWindow.FindName('RevisionSearch').Text=''
+if(@($taskWindow.FindName('RevisionGrid').Columns | Where-Object {$_.Header -eq 'Current Revision'}).Count -ne 1){throw 'Missing sheet current revision column'}
+Save-TaskUi 'RevisionListPreview'
+if(@($taskWindow.FindName('RevisionGrid').Columns | Where-Object {$_.ActualWidth -lt 110}).Count -ne 0){throw 'Revision columns must remain readable'}
+Save-TaskUi 'RevisionListNarrowPreview' 940 720
 $taskWindow.Close()
 Write-Output 'PASS: splash loads AI image embedded in DLL without a desktop window'
 Write-Output 'PASS: Sheet List contains Excel/JSON export and import/manual creation menus'
