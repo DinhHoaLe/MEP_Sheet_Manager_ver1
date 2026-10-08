@@ -1,13 +1,14 @@
 ﻿$ErrorActionPreference='Stop'
 Add-Type -AssemblyName PresentationFramework,PresentationCore,WindowsBase
 $taskProjectRoot=Split-Path $PSScriptRoot -Parent
+[void][Reflection.Assembly]::LoadFrom((Join-Path $taskProjectRoot 'bin\Release\Revit2023\MEP_Sheet_Manager_Modeless.dll'))
 [xml]$taskXaml=Get-Content -LiteralPath (Join-Path $taskProjectRoot 'src\UI\Wpf\SheetManagerWindow.xaml') -Raw -Encoding UTF8
 foreach($taskElement in $taskXaml.SelectNodes('//*')) {
     foreach($taskAttribute in @($taskElement.Attributes)) {
         if($taskAttribute.LocalName -in @('Class','Click','SelectionChanged','CellEditEnding','TextChanged')) { [void]$taskElement.Attributes.Remove($taskAttribute) }
     }
 }
-$taskImage=$taskXaml.SelectSingleNode('//*[local-name()="Image"]');$taskImage.SetAttribute('Source',(Join-Path $taskProjectRoot 'src\UI\Assets\sheet-splash.png'))
+
 $taskReader=New-Object System.Xml.XmlNodeReader $taskXaml
 $taskWindow=[Windows.Markup.XamlReader]::Load($taskReader)
 $taskWindow.FindName('LoadingPanel').Visibility='Collapsed';foreach($taskName in @('HeaderPanel','BodyGrid','FooterGrid')){$taskWindow.FindName($taskName).Visibility='Visible'}

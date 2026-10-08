@@ -53,6 +53,7 @@
     <Compile Include="src\Services\Excel\SheetWorkbook.cs" />
     <Compile Include="src\Services\Excel\SheetJsonFile.cs" />
     <Resource Include="src\UI\Assets\sheet-splash.png" />
+    <Resource Include="src\UI\Assets\sheet-manager-symbol.png" />
     <Compile Include="src\Infrastructure\SheetExternalEventHandler.cs" />
     <Compile Include="src\UI\Wpf\SheetManagerWindow.xaml.cs"><DependentUpon>SheetManagerWindow.xaml</DependentUpon></Compile>
     <Page Include="src\UI\Wpf\SheetManagerWindow.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>

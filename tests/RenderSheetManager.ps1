@@ -34,7 +34,7 @@ function Save-TaskUi([string]$taskName,[int]$taskWidth=1180,[int]$taskHeight=790
 Save-TaskUi 'SheetLoadingPreview'
 $taskWindow.FindName('LoadingPanel').Visibility='Collapsed'
 foreach($taskName in @('HeaderPanel','BodyGrid','FooterGrid')){$taskWindow.FindName($taskName).Visibility='Visible'}
-$taskWindow.FindName('ProjectLabel').Text='Project: MEP Sheet Studio — dữ liệu minh họa'
+$taskWindow.FindName('ProjectLabel').Text='Project: Sheet Manager — dữ liệu minh họa'
 $taskWindow.FindName('StatusLabel').Text='Sheet hiện hữu hiển thị trạng thái. Chọn Nhập / Tạo sheet để thêm bản nháp.'
 $taskRows=New-Object 'System.Collections.Generic.List[MEP_Sheet_Manager.SheetInfo]'
 $taskRow=New-Object MEP_Sheet_Manager.SheetInfo -ArgumentList 'A101','MẶT BẰNG ĐIỆN TẦNG 1',$false;$taskRows.Add($taskRow)
