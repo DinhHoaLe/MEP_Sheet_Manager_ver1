@@ -1,0 +1,5 @@
+Mode: built-in image_gen edit; precise-object-edit / background-extraction.
+Reference: D:/2_Revit/6_Working/00. Revit_API/Project/Symbol/Revit MEP Tools Icon Grid.png
+Request: Create ONE standalone icon for MEP_Sheet_Manager_Ver1 using only the bottom-right symbol. Preserve stacked drawing sheets, floor plan thumbnail, sheet-list marks, warm beige/taupe/brown outlines and rounded document corners. Remove project-name caption, all other icons, grid, tile card and background decorations. Center the symbol with comfortable padding on a genuinely transparent background. No text, letters, numbers or watermark.
+Output: src/UI/Assets/sheet-manager-symbol.png
+Original source image preserved.

@@ -12,6 +12,6 @@ namespace MEP_Sheet_Manager
             Request = null;
             if (action != null) action(application);
         }
-        public string GetName() { return "MEP Sheet Studio requests"; }
+        public string GetName() { return "Sheet Manager requests"; }
     }
 }
